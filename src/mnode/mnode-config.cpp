@@ -17,6 +17,7 @@ using json = nlohmann::json;
             "outIndex": "",                     //collateral_output_index
 
             "extAddress": "10.10.10.10:1111",    //StoVaCore's ip and port
+            "extP2P": "10.10.10.10:1111",        //Kademlia's ip and port
             "extKey": "",                        //StoVaCore's private key
             "extCfg": {},                        //StoVaCore's config
         }
@@ -81,6 +82,7 @@ bool CMasternodeConfig::read(std::string& strErr)
                 {"txid", ""},
                 {"outIndex", ""},
                 {"extAddress", ""},
+                {"extP2P", ""},
                 {"extKey", ""},
                 {"extCfg", {}}
             }}
@@ -116,7 +118,7 @@ bool CMasternodeConfig::read(std::string& strErr)
             continue;
         }
 
-        std::string alias, mnAddress, mnPrivKey, txid, outIndex, extAddress, extKey, extCfg;
+        std::string alias, mnAddress, mnPrivKey, txid, outIndex, extAddress, extKey, extCfg, extP2P;
         
         alias = it.key();
 
@@ -140,12 +142,18 @@ bool CMasternodeConfig::read(std::string& strErr)
             return false;
         }
 
+        extP2P = get_string(it, "extP2P");
+        if (!extP2P.empty() && !checkIPAddressPort(extP2P, alias, false, strErr)) {
+            strErr += " (extP2P)";
+            return false;
+        }
+
         extKey = get_string(it, "extKey");
         extCfg = get_obj_as_string(it, "extCfg");
 
         if (extCfg.length() > 1024) extCfg.erase(1024, std::string::npos);
 
-        CMasternodeEntry cme(alias, mnAddress, mnPrivKey, txid, outIndex, extAddress, extKey, extCfg);
+        CMasternodeEntry cme(alias, mnAddress, mnPrivKey, txid, outIndex, extAddress, extP2P, extKey, extCfg);
         entries.push_back(cme);
     }
 
