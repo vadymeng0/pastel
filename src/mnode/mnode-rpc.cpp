@@ -511,7 +511,7 @@ UniValue masternode(const UniValue& params, bool fHelp)
     }
     if (strCommand == "make-conf")
     {
-        if (params.size() != 5 && params.size() != 7)
+        if (params.size() != 6 && params.size() != 8)
             throw JSONRPCError(RPC_INVALID_PARAMETER,
                                R"("masternode make-conf "alias" "mnAddress:port" "extAddress:port" "extP2P:port" "passphrase" "txid" "index"\n"
                                "Create masternode configuration in JSON format:\n"
@@ -811,6 +811,7 @@ bool DecodeHexVecMnb(std::vector<CMasternodeBroadcast>& vecMnb, const std::strin
 
 UniValue masternodebroadcast(const UniValue& params, bool fHelp)
 {
+
     std::string strCommand;
     if (!params.empty())
         strCommand = params[0].get_str();
