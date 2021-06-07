@@ -27,9 +27,11 @@ using json = nlohmann::json;
 bool isOutIdxValid(std::string& outIdx, std::string alias, std::string& strErr)
 {
     bool retVal = false;
-    char* p;
+    char* p = nullptr;
     long converted = strtol(outIdx.c_str(), &p, 10);
-    if (*p) {
+
+    if(*p != '\0')
+    {
         strErr = _("Failed to parse outIndex string") + "\n" +
                 strprintf(_("Alias: %s"), alias);
         return false;
