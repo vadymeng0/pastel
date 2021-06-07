@@ -24,6 +24,31 @@ using json = nlohmann::json;
     }
 */
 
+bool isOutIdxValid(std::string& outIdx, std::string alias, std::string& strErr)
+{
+    bool retVal = false;
+    char* p;
+    long converted = strtol(outIdx.c_str(), &p, 10);
+    if (*p) {
+        strErr = _("Failed to parse outIndex string") + "\n" +
+                strprintf(_("Alias: %s"), alias);
+        return false;
+    }
+    else {
+
+        if (0 <= converted && converted <= 1000000)
+        {
+            return true;
+        }
+
+        strErr = _("Failed to parse outIndex string. Value shall be between 0 and 1000000") + "\n" +
+                strprintf(_("Alias: %s"), alias);
+        return false;
+    }
+
+    return retVal;
+}
+
 bool checkIPAddressPort(std::string& address, std::string alias, bool checkPort, std::string& strErr)
 {
     int port = 0;
@@ -129,6 +154,12 @@ bool CMasternodeConfig::read(std::string& strErr)
 
         if (mnAddress.empty() || mnPrivKey.empty() || txid.empty() || outIndex.empty()) {
             continue;
+        }
+
+        if (!isOutIdxValid(outIndex, alias, strErr))
+        {
+            strErr += " (outIndex)";
+            return false;
         }
 
         if (!checkIPAddressPort(mnAddress, alias, true, strErr)) {
