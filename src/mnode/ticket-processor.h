@@ -94,6 +94,9 @@ public:
     
     std::vector<std::string> ValidateOwnership(const std::string &_txid, const std::string &_pastelID);
 
+    //Auction ticket related functions
+    std::vector<std::string> GetAuctionsForRegTicket(const std::string &_txid);
+
 #ifdef FAKE_TICKET
     static std::string CreateFakeTransaction(CPastelTicket& ticket, CAmount ticketPrice, const std::vector<std::pair<std::string, CAmount>>& extraPayments, const std::string& strVerb, bool bSend);
 #endif

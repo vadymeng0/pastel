@@ -1189,6 +1189,12 @@ std::vector<std::string> CPastelTicketProcessor::ValidateOwnership(const std::st
     return sRetVal;
 }
 
+std::vector<std::string> CPastelTicketProcessor::GetAuctionsForRegTicket(const std::string &_txid)
+{
+    //ToDo: Implement functionality
+    return std::vector<std::string>();
+}
+
 #ifdef FAKE_TICKET
 std::string CPastelTicketProcessor::CreateFakeTransaction(CPastelTicket& ticket, CAmount ticketPrice, const std::vector<std::pair<std::string, CAmount>>& extraPayments, const std::string& strVerb, bool bSend)
 {

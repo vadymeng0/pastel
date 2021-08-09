@@ -171,6 +171,7 @@ class MasterNodeTicketsTest(MasterNodeCommon):
             self.artroyalty_null_ticket_tests()
 
         self.artact_ticket_tests(False)
+        self.tmp_test_getauctioncompany()
         self.artsell_ticket_tests1(False)
         self.artbuy_ticket_tests(False)
         self.arttrade_ticket_tests(False)
@@ -200,6 +201,7 @@ class MasterNodeTicketsTest(MasterNodeCommon):
             self.personal_pastelid_ticket_tests(True)
             self.artreg_ticket_tests(True, "key10001", "key20001")
             self.artact_ticket_tests(True)
+            self.tmp_test_getauctioncompany()
             self.artsell_ticket_tests1(True)
             self.artbuy_ticket_tests(True)
             self.arttrade_ticket_tests(True)
@@ -208,6 +210,14 @@ class MasterNodeTicketsTest(MasterNodeCommon):
             self.storage_fee_tests()
             self.tickets_list_filter_tests(1)
             self.username_ticket_tests()
+
+# ===============================================================================================================
+    def tmp_test_getauctioncompany(self):
+        self.nodes[self.non_mn4].tickets("task", "getauctioncompany", self.art_ticket1_txid, "1") # Actve search
+        self.nodes[self.non_mn4].tickets("task", "getauctioncompany", self.art_ticket1_txid, "0") # Not active search
+        self.nodes[self.non_mn4].tickets("task", "getauctioncompany", self.art_ticket1_txid) # No optional flag given
+        self.nodes[self.non_mn4].tickets("task", "getauctioncompany", ) # No mandatory flag given
+
 
 # ===============================================================================================================
     def list_and_validate_ticket_ownerships(self):

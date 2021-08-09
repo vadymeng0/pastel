@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iomanip>
 #include <univalue.h>
+#include <sstream>
 
 #include "main.h"
 #include "netbase.h"
@@ -1586,9 +1587,9 @@ static UniValue getTickets(const std::string& key, T2 key2 = "", Lambda otherFun
 #define FAKE_TICKET
 UniValue tickets(const UniValue& params, bool fHelp) {
 #ifdef FAKE_TICKET
-    RPC_CMD_PARSER(TICKETS, params, Register, find, list, get, makefaketicket, sendfaketicket, tools);
+    RPC_CMD_PARSER(TICKETS, params, Register, find, list, get, makefaketicket, sendfaketicket, tools, task);
 #else
-    RPC_CMD_PARSER(TICKETS, params, Register, find, list, get, tools);
+    RPC_CMD_PARSER(TICKETS, params, Register, find, list, get, tools, task);
 #endif	
 	if (fHelp || !TICKETS.IsCmdSupported())
 		throw runtime_error(
@@ -1603,6 +1604,7 @@ Available commands:
   find ...     - Find specific Pastel tickets in the blockchain.
   list ...     - List all specific Pastel tickets in the blockchain.
   get ...      - Get Pastel ticket by txid.
+  task ...     - Execute tasks based on further parameters. (i.e.: getauctioncompany, etc.)
 )");
 	
 	std::string strCmd, strError;
@@ -2694,7 +2696,76 @@ As json rpc
             }
         }
     }
-    
+    //keszey
+        if (TICKETS.IsCmd(RPC_CMD_TICKETS::task)) {
+        
+        RPC_CMD_PARSER2(LIST, params, getauctioncompany);
+        
+        UniValue obj(UniValue::VARR);
+        switch (LIST.cmd()) {
+            
+            case RPC_CMD_LIST::getauctioncompany: {
+                std::string txid; // Either NFT registration ticket or auction ticket txid
+                std::vector<std::string> auctionTxids;
+                bool bIsActiveOnly = true;
+                
+                if (params.size() > 2) {
+                    txid = params[2].get_str();
+
+                    if (params.size() > 3){
+                        // Optional parameter to support live or not live auctions.
+                        // By default it is set to live.
+                        std::string liveAuction = params[3].get_str();
+                        bIsActiveOnly = (liveAuction == "1");
+
+                        if(bIsActiveOnly)
+                        {
+                            //keszey
+                            LogPrintf("Keszey: Active search = %s\n", liveAuction);
+                        }
+                        else
+                        {
+                            //keszey
+                            LogPrintf("Keszey: Not an active search = %s\n", liveAuction);
+                        }
+                    }
+                    else
+                    {
+                        //keszey
+                            LogPrintf("Keszey: No optional flag given");
+                    }
+        
+                    UniValue resultArray(UniValue::VARR);
+
+                    auctionTxids = masterNodeCtrl.masternodeTickets.GetAuctionsForRegTicket(txid);
+
+                    //if (auctionTxids.empty())
+                    //{
+                    //    auctionTxids = 0;
+                    //}
+        
+                    return resultArray;
+                }
+                else
+                {
+                    throw JSONRPCError(RPC_INVALID_PARAMETER,
+                                       R"(tickets task getauctioncompany "txid" "flag" "
+Get auction company by txid. Return top 5 masternodes per auction ticket -when it was created.
+
+Arguments:
+1. "txid"       (string, required) txid of the original nft registration or the auction ticket txid
+2. "flag"       (bool, optional) A 1 or 0 flag indicating if shall return only active (1) or active + already expired (0) auctions
+
+Get auction company
+)" + HelpExampleCli("tickets task getauctioncompany", R"(""e4ee20e436d33f59cc313647bacff0c5b0df5b7b1c1fa13189ea7bc8b9df15a4" "1")") +
+                                           R"(
+As json rpc
+)" + HelpExampleRpc("tickets", R"("tools", "validateownership", "e4ee20e436d33f59cc313647bacff0c5b0df5b7b1c1fa13189ea7bc8b9df15a4" "1")"));
+                }
+            }
+        }
+    }
+    //keszey
 #ifdef FAKE_TICKET
     if (TICKETS.IsCmd(RPC_CMD_TICKETS::makefaketicket) || TICKETS.IsCmd(RPC_CMD_TICKETS::sendfaketicket))
     {
