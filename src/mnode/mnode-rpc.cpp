@@ -2706,7 +2706,7 @@ As json rpc
             
             case RPC_CMD_LIST::getauctioncompany: {
                 std::string txid; // Either NFT registration ticket or auction ticket txid
-                std::vector<std::string> auctionTxids;
+                std::vector<CPastelTicket> auctions; //It shall be CNFTAuctionTicket later on but now it is fine..
                 bool bIsActiveOnly = true;
                 
                 if (params.size() > 2) {
@@ -2737,19 +2737,22 @@ As json rpc
         
                     UniValue resultArray(UniValue::VARR);
 
-                    auctionTxids = masterNodeCtrl.masternodeTickets.GetAuctionsForRegTicket(txid);
+                    auctions = masterNodeCtrl.masternodeTickets.GetAuctionsFromRegOrAucionTxid(txid, bIsActiveOnly);
 
-                    //if (auctionTxids.empty())
-                    //{
-                    //    auctionTxids = 0;
-                    //}
+                    for (auto & auction : auctions)
+                    {
+                        auto topBlockMNs = masterNodeCtrl.masternodeManager.GetTopMNsForBlock(auction.GetBlock(), true);
+                        UniValue mnsArray = formatMnsInfo(topBlockMNs);
+                        resultArray.pushKV(auction.GetTxId(), mnsArray);
+                    }
         
                     return resultArray;
                 }
                 else
                 {
                     throw JSONRPCError(RPC_INVALID_PARAMETER,
-                                       R"(tickets task getauctioncompany "txid" "flag" "
+                                       R"(No mandatory flag (txid) given
+                                       call exmple: tickets task getauctioncompany "txid" "flag" "
 Get auction company by txid. Return top 5 masternodes per auction ticket -when it was created.
 
 Arguments:
@@ -2760,7 +2763,7 @@ Get auction company
 )" + HelpExampleCli("tickets task getauctioncompany", R"(""e4ee20e436d33f59cc313647bacff0c5b0df5b7b1c1fa13189ea7bc8b9df15a4" "1")") +
                                            R"(
 As json rpc
-)" + HelpExampleRpc("tickets", R"("tools", "validateownership", "e4ee20e436d33f59cc313647bacff0c5b0df5b7b1c1fa13189ea7bc8b9df15a4" "1")"));
+)" + HelpExampleRpc("tickets", R"("task", "getauctioncompany", "e4ee20e436d33f59cc313647bacff0c5b0df5b7b1c1fa13189ea7bc8b9df15a4" "1")"));
                 }
             }
         }

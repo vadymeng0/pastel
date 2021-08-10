@@ -216,7 +216,16 @@ class MasterNodeTicketsTest(MasterNodeCommon):
         self.nodes[self.non_mn4].tickets("task", "getauctioncompany", self.art_ticket1_txid, "1") # Actve search
         self.nodes[self.non_mn4].tickets("task", "getauctioncompany", self.art_ticket1_txid, "0") # Not active search
         self.nodes[self.non_mn4].tickets("task", "getauctioncompany", self.art_ticket1_txid) # No optional flag given
-        self.nodes[self.non_mn4].tickets("task", "getauctioncompany", ) # No mandatory flag given
+        
+        #So far this is good that it halts -> later on we need to have but not now
+        #try:
+        if 1:
+            self.nodes[self.non_mn4].tickets("task", "getauctioncompany", ) # No mandatory flag given
+        #except JSONRPCException as e:
+        #    self.errorString = e.error['message']
+        #    print(self.errorString)
+        #assert_equal("No mandatory flag (txid) given"
+        #             in self.errorString, True)
 
 
 # ===============================================================================================================
