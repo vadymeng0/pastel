@@ -171,6 +171,7 @@ class MasterNodeTicketsTest(MasterNodeCommon):
             self.NFTroyalty_null_ticket_tests()
 
         self.NFTact_ticket_tests(False)
+        self.tmp_test_getauctioncompany()
         self.NFTsell_ticket_tests1(False)
         self.NFTbuy_ticket_tests(False)
         self.NFTtrade_ticket_tests(False)
@@ -200,6 +201,7 @@ class MasterNodeTicketsTest(MasterNodeCommon):
             self.personal_pastelid_ticket_tests(True)
             self.NFTreg_ticket_tests(True, "key10001", "key20001")
             self.NFTact_ticket_tests(True)
+            self.tmp_test_getauctioncompany()
             self.NFTsell_ticket_tests1(True)
             self.NFTbuy_ticket_tests(True)
             self.NFTtrade_ticket_tests(True)
@@ -208,6 +210,23 @@ class MasterNodeTicketsTest(MasterNodeCommon):
             self.storage_fee_tests()
             self.tickets_list_filter_tests(1)
             self.username_ticket_tests()
+
+# ===============================================================================================================
+    def tmp_test_getauctioncompany(self):
+        self.nodes[self.non_mn4].tickets("task", "getauctioncompany", self.NFT_ticket1_txid, "1") # Actve search
+        self.nodes[self.non_mn4].tickets("task", "getauctioncompany", self.NFT_ticket1_txid, "0") # Not active search
+        self.nodes[self.non_mn4].tickets("task", "getauctioncompany", self.NFT_ticket1_txid) # No optional flag given
+        
+        #So far this is good that it halts -> later on we need to have but not now
+        #try:
+        if 1:
+            self.nodes[self.non_mn4].tickets("task", "getauctioncompany", ) # No mandatory flag given
+        #except JSONRPCException as e:
+        #    self.errorString = e.error['message']
+        #    print(self.errorString)
+        #assert_equal("No mandatory flag (txid) given"
+        #             in self.errorString, True)
+
 
 # ===============================================================================================================
     def list_and_validate_ticket_ownerships(self):

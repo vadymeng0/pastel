@@ -94,6 +94,10 @@ public:
     
     std::vector<std::string> ValidateOwnership(const std::string &_txid, const std::string &_pastelID);
 
+    //Auction ticket related functions
+    //Shall be auction ticket by the way.. But sicne it is not ready use SellTicket class (base of Aucion)..
+    std::vector<CPastelTicket> GetAuctionsFromRegOrAucionTxid(const std::string &_txid, bool bIsActiveOnly);
+
 #ifdef FAKE_TICKET
     static std::string CreateFakeTransaction(CPastelTicket& ticket, CAmount ticketPrice, const std::vector<std::pair<std::string, CAmount>>& extraPayments, const std::string& strVerb, bool bSend);
 #endif
