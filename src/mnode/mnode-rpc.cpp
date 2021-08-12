@@ -2705,7 +2705,7 @@ As json rpc
             
             case RPC_CMD_LIST::getauctioncompany: {
                 std::string txid; // Either NFT registration ticket or auction ticket txid
-                std::vector<CPastelTicket> auctions; //It shall be CNFTAuctionTicket later on but now it is fine..
+                std::vector<CPastelTicket*> auctions; //It shall be CNFTAuctionTicket later on but now it is fine..
                 bool bIsActiveOnly = true;
                 
                 if (params.size() > 2) {
@@ -2738,11 +2738,11 @@ As json rpc
 
                     auctions = masterNodeCtrl.masternodeTickets.GetAuctionsFromRegOrAucionTxid(txid, bIsActiveOnly);
 
-                    for (auto & auction : auctions)
+                    for (const auto auction : auctions)
                     {
-                        auto topBlockMNs = masterNodeCtrl.masternodeManager.GetTopMNsForBlock(auction.GetBlock(), true);
+                        auto topBlockMNs = masterNodeCtrl.masternodeManager.GetTopMNsForBlock(auction->GetBlock(), true);
                         UniValue mnsArray = formatMnsInfo(topBlockMNs);
-                        resultArray.pushKV(auction.GetTxId(), mnsArray);
+                        resultArray.pushKV(auction->GetTxId(), mnsArray);
                     }
         
                     return resultArray;
