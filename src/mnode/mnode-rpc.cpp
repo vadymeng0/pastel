@@ -42,6 +42,9 @@ UniValue formatMnsInfo(const std::vector<CMasternode>& topBlockMNs)
     KeyIO keyIO(Params());
     for (const auto &mn : topBlockMNs)
     {
+        //if( maxMNs >= i)
+        //    break;
+        
         UniValue objItem(UniValue::VOBJ);
         objItem.pushKV("rank", strprintf("%d", ++i));
 
@@ -2705,7 +2708,7 @@ As json rpc
             
             case RPC_CMD_LIST::getauctioncompany: {
                 std::string txid; // Either NFT registration ticket or auction ticket txid
-                std::vector<CPastelTicket*> auctions; //It shall be CNFTAuctionTicket later on but now it is fine..
+                std::map<std::string, unsigned int> auctions_map; //Represent txids as key with created blockheight //It shall be CNFTAuctionTicket later on but now it is fine..
                 bool bIsActiveOnly = true;
                 
                 if (params.size() > 2) {
@@ -2719,30 +2722,27 @@ As json rpc
 
                         if(bIsActiveOnly)
                         {
-                            //keszey
-                            LogPrintf("Keszey: Active search = %s\n", liveAuction);
+                            LogPrintf("Active search = %s\n", liveAuction);
                         }
                         else
                         {
-                            //keszey
-                            LogPrintf("Keszey: Not an active search = %s\n", liveAuction);
+                            LogPrintf("Not an active search = %s\n", liveAuction);
                         }
                     }
                     else
                     {
-                        //keszey
-                            LogPrintf("Keszey: No optional flag given");
+                        LogPrintf("No optional flag given");
                     }
         
-                    UniValue resultArray(UniValue::VARR);
+                    UniValue resultArray(UniValue::VOBJ);
 
-                    auctions = masterNodeCtrl.masternodeTickets.GetAuctionsFromRegOrAucionTxid(txid, bIsActiveOnly);
+                    auctions_map = masterNodeCtrl.masternodeTickets.GetAuctionsFromRegOrAucionTxid(txid, bIsActiveOnly);
 
-                    for (const auto auction : auctions)
+                    for (const auto& kv: auctions_map) 
                     {
-                        auto topBlockMNs = masterNodeCtrl.masternodeManager.GetTopMNsForBlock(auction->GetBlock(), true);
+                        auto topBlockMNs = masterNodeCtrl.masternodeManager.GetTopMNsForBlock(kv.second, true);
                         UniValue mnsArray = formatMnsInfo(topBlockMNs);
-                        resultArray.pushKV(auction->GetTxId(), mnsArray);
+                        resultArray.pushKV(kv.first, mnsArray);
                     }
         
                     return resultArray;

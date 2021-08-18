@@ -213,9 +213,15 @@ class MasterNodeTicketsTest(MasterNodeCommon):
 
 # ===============================================================================================================
     def tmp_test_getauctioncompany(self):
-        self.nodes[self.non_mn4].tickets("task", "getauctioncompany", self.NFT_ticket1_txid, "1") # Actve search
+       
         self.nodes[self.non_mn4].tickets("task", "getauctioncompany", self.NFT_ticket1_txid, "0") # Not active search
         self.nodes[self.non_mn4].tickets("task", "getauctioncompany", self.NFT_ticket1_txid) # No optional flag given
+        
+        # Added registration ticket currently only !! Has to be interchanged with CAutcion ticket
+        self.nodes[self.non_mn4].tickets("task", "getauctioncompany", self.NFT_ticket1_txid, "1") # Actve search
+
+        # Runtime error due to no ticket found with tx_id
+        self.nodes[self.non_mn4].tickets("task", "getauctioncompany", "BLA_BLA_TXID", "0") # Not active search
         
         #So far this is good that it halts -> later on we need to have but not now
         #try:

@@ -1189,29 +1189,33 @@ std::vector<std::string> CPastelTicketProcessor::ValidateOwnership(const std::st
     return sRetVal;
 }
 
-std::vector<CPastelTicket*> CPastelTicketProcessor::GetAuctionsFromRegOrAucionTxid(const std::string &_txid, bool bIsActiveOnly)
+std::map<std::string, unsigned int> CPastelTicketProcessor::GetAuctionsFromRegOrAucionTxid(const std::string &_txid, bool bIsActiveOnly)
 {
     //ToDo: Implement functionality
     
-    std::vector<CPastelTicket*> vRetVal ={ };
+    //std::vector<CPastelTicket*> vRetVal ={ };
+    std::map<std::string, unsigned int> mTxidWithHeight;
 
-    return vRetVal;
+    // Uncommented for testing purposes
+    //return vRetVal;
 
     //Check if ticket is found by txid
     try{
         auto ticket_reg = CPastelTicketProcessor::GetTicket(_txid, TicketID::NFT);
+        
         auto NFT_ticket_reg = dynamic_cast<CNFTRegTicket*>(ticket_reg.get());
+        
         if (!NFT_ticket_reg)
         {
             //If not an NFT - registration ticket txid then might be that an auction txid
             // Here it must be AUCTION type and not NFT !!!!!!!
             auto ticket_auction = CPastelTicketProcessor::GetTicket(_txid, TicketID::NFT); // When merged, need to change to auction!!!!
             // Here it must be AUCTION type and not NFT !!!!!!!
-            auto NFT_ticket_auction = dynamic_cast<CNFTRegTicket*>(ticket_auction.get());
+            auto NFT_ticket_auction = dynamic_cast<CNFTTradeTicket*>(ticket_auction.get());
             if (!NFT_ticket_auction)
             {
                 //If not an NFT - registration ticket txid then might be that an auction txid
-                return vRetVal;
+                return mTxidWithHeight;
             }
             
             // This means it is an auction ticket so we have to get the block-
@@ -1235,14 +1239,17 @@ std::vector<CPastelTicket*> CPastelTicketProcessor::GetAuctionsFromRegOrAucionTx
                 }
 
                 //2. Current block is less than the auction ticket duration
-                vRetVal.push_back(NFT_ticket_auction);
-                return vRetVal;
+                //vRetVal.push_back(NFT_ticket_auction);
+                return mTxidWithHeight;
             }
             
 
         }
         else
         {
+            mTxidWithHeight.insert({NFT_ticket_reg->GetTxId(), NFT_ticket_reg->GetBlock()});
+            //vRetVal.push_back(NFT_ticket_reg);
+            return mTxidWithHeight;
             // ToDo: Implement
             // It is a registration ticket so let's see how many auciton ticket matches
             // We have to iterating over auction tickets to see
@@ -1251,9 +1258,11 @@ std::vector<CPastelTicket*> CPastelTicketProcessor::GetAuctionsFromRegOrAucionTx
     }
     catch(const std::runtime_error& e)
     {
-        //ToDo: Handle exception and throw as well
+        //ToDo: Handle exception and throw as well ? or ?
         LogPrintf("Was not able to process GetAuctionCompany request due to: %s\n", e.what()); 
     }
+
+    return mTxidWithHeight;
 
 }
 
