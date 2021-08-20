@@ -3,10 +3,36 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #include "vector_types.h"
+#include "map_types.h"
 
 #include "mnode/mnode-consts.h"
 #include "mnode/ticket.h"
 #include "mnode/mnode-controller.h"
+
+#include <tuple>
+#include <optional>
+
+// forward ticket class declarations
+class CPastelIDRegTicket;
+class CNFTRegTicket;
+class CNFTActivateTicket;
+class CNFTSellTicket;
+class CNFTBuyTicket;
+class CNFTTradeTicket;
+class CNFTRoyaltyTicket;
+class CTakeDownTicket;
+class CChangeUsernameTicket;
+
+// ticket vector types
+using PastelIDRegTickets_t = std::vector<CPastelIDRegTicket>;
+using NFTRegTickets_t = std::vector<CNFTRegTicket>;
+using NFTActivateTickets_t = std::vector<CNFTActivateTicket>;
+using NFTSellTickets_t = std::vector<CNFTSellTicket>;
+using NFTBuyTickets_t = std::vector<CNFTBuyTicket>;
+using NFTTradeTickets_t = std::vector<CNFTTradeTicket>;
+using NFTRoyaltyTickets_t = std::vector<CNFTRoyaltyTicket>;
+using TakeDownTickets_t = std::vector<CTakeDownTicket>;
+using ChangeUsernameTickets_t = std::vector<CChangeUsernameTicket>;
 
 // PastelID Ticket //////////////////////////////////////////////////////////////////////////////////////////////////////
 class CPastelIDRegTicket : public CPastelTicket
@@ -73,7 +99,7 @@ public:
 	
     static CPastelIDRegTicket Create(std::string _pastelID, const SecureString& strKeyPass, std::string _address);
     static bool FindTicketInDb(const std::string& key, CPastelIDRegTicket& ticket);
-    static std::vector<CPastelIDRegTicket> FindAllTicketByPastelAddress(const std::string& address);
+    static PastelIDRegTickets_t FindAllTicketByPastelAddress(const std::string& address);
 };
 
 // NFT Registration Ticket //////////////////////////////////////////////////////////////////////////////////////////////
@@ -151,7 +177,7 @@ public:
 	std::string NFTTicket;
     
     std::string pastelIDs[allsigns];
-    std::vector<unsigned char> ticketSignatures[allsigns];
+    v_uint8 ticketSignatures[allsigns];
     
     std::string keyOne;
     std::string keyTwo;
@@ -225,7 +251,7 @@ public:
     static bool FindTicketInDb(const std::string& key, CNFTRegTicket& _ticket);
     static bool CheckIfTicketInDb(const std::string& key);
     
-    static std::vector<CNFTRegTicket> FindAllTicketByPastelID(const std::string& pastelID);
+    static NFTRegTickets_t FindAllTicketByPastelID(const std::string& pastelID);
 };
 
 // NFT Activation Ticket ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -249,7 +275,7 @@ public:
 	std::string regTicketTnxId;
     int creatorHeight{};
     int storageFee{};
-	std::vector<unsigned char> signature;
+	v_uint8 signature;
 
 public:
     CNFTActivateTicket() = default;
@@ -298,8 +324,8 @@ public:
     static CNFTActivateTicket Create(std::string _regTicketTxId, int _creatorHeight, int _storageFee, std::string _pastelID, const SecureString& strKeyPass);
     static bool FindTicketInDb(const std::string& key, CNFTActivateTicket& ticket);
 
-    static std::vector<CNFTActivateTicket> FindAllTicketByPastelID(const std::string& pastelID);
-    static std::vector<CNFTActivateTicket> FindAllTicketByCreatorHeight(int height);
+    static NFTActivateTickets_t FindAllTicketByPastelID(const std::string& pastelID);
+    static NFTActivateTickets_t FindAllTicketByCreatorHeight(int height);
     static bool CheckTicketExistByNFTTicketID(const std::string& regTicketTnxId);
 };
 
@@ -328,7 +354,7 @@ public:
     unsigned int activeBefore{};             //as a block height
     unsigned short copyNumber{};
     std::string reserved;
-    std::vector<unsigned char> signature;
+    v_uint8 signature;
     
     std::string key;
 
@@ -379,8 +405,8 @@ public:
     static CNFTSellTicket Create(std::string _NFTTnxId, int _askedPrice, int _validAfter, int _validBefore, int _copy_number, std::string _pastelID, const SecureString& strKeyPass);
     static bool FindTicketInDb(const std::string& key, CNFTSellTicket& ticket);
     
-    static std::vector<CNFTSellTicket> FindAllTicketByPastelID(const std::string& pastelID);
-    static std::vector<CNFTSellTicket> FindAllTicketByNFTTnxID(const std::string& NFTTnxId);
+    static NFTSellTickets_t FindAllTicketByPastelID(const std::string& pastelID);
+    static NFTSellTickets_t FindAllTicketByNFTTnxID(const std::string& NFTTnxId);
 };
 
 /*
@@ -400,7 +426,7 @@ public:
     std::string sellTnxId;
     unsigned int price{};
     std::string reserved;
-    std::vector<unsigned char> signature;
+    v_uint8 signature;
     
 public:
     CNFTBuyTicket() = default;
@@ -449,7 +475,7 @@ public:
 
     static bool CheckBuyTicketExistBySellTicket(const std::string& _sellTnxId);
     
-    static std::vector<CNFTBuyTicket> FindAllTicketByPastelID(const std::string& pastelID);
+    static NFTBuyTickets_t FindAllTicketByPastelID(const std::string& pastelID);
 };
 
 /*
@@ -464,6 +490,8 @@ public:
 		"signature": ""
 	},
  */
+using txid_serial_tuple_t = std::tuple<std::string, std::string>;
+
 class CNFTTradeTicket : public CPastelTicket
 {
 public:
@@ -476,7 +504,7 @@ public:
 
     unsigned int price{};
     std::string reserved;
-    std::vector<unsigned char> signature;
+    v_uint8 signature;
 
 public:
     CNFTTradeTicket() = default;
@@ -533,15 +561,15 @@ public:
     static CNFTTradeTicket Create(std::string _sellTnxId, std::string _buyTnxId, std::string _pastelID, const SecureString& strKeyPass);
     static bool FindTicketInDb(const std::string& key, CNFTTradeTicket& ticket);
     
-    static std::vector<CNFTTradeTicket> FindAllTicketByPastelID(const std::string& pastelID);
-    static std::vector<CNFTTradeTicket> FindAllTicketByNFTTnxID(const std::string& NFTTnxID);
-    static std::vector<CNFTTradeTicket> FindAllTicketByRegTnxID(const std::string& nftRegTnxId);
+    static NFTTradeTickets_t FindAllTicketByPastelID(const std::string& pastelID);
+    static NFTTradeTickets_t FindAllTicketByNFTTnxID(const std::string& NFTTnxID);
+    static NFTTradeTickets_t FindAllTicketByRegTnxID(const std::string& nftRegTnxId);
     
     static bool CheckTradeTicketExistBySellTicket(const std::string& _sellTnxId);
     static bool CheckTradeTicketExistByBuyTicket(const std::string& _buyTnxId);
     static bool GetTradeTicketBySellTicket(const std::string& _sellTnxId, CNFTTradeTicket& ticket);
     static bool GetTradeTicketByBuyTicket(const std::string& _buyTnxId, CNFTTradeTicket& ticket);
-    static std::map<std::string, std::string> GetPastelIdAndTxIdWithTopHeightPerCopy(const std::vector<CNFTTradeTicket> & allTickets);
+    static mu_strings GetPastelIdAndTxIdWithTopHeightPerCopy(const NFTTradeTickets_t& allTickets);
     
     std::unique_ptr<CPastelTicket> FindNFTRegTicket() const;
 
@@ -550,7 +578,7 @@ public:
     void SetCopySerialNr(const std::string& nftCopySerialNr);
     const std::string& GetCopySerialNr() const;
     
-    static std::vector<std::string> GetNFTRegTxIDAndSerialIfResoldNft(const std::string& _txid);
+    static std::optional<txid_serial_tuple_t> GetNFTRegTxIDAndSerialIfResoldNft(const std::string& _txid);
 };
 
 /*
@@ -569,7 +597,7 @@ public:
   std::string pastelID;    //pastelID of the old (current at moment of creation) royalty recipient
   std::string newPastelID; //pastelID of the new royalty recipient
   std::string NFTTnxId;    //txid of the NFT for royalty payments
-  std::vector<unsigned char> signature;
+  v_uint8 signature;
 
 public:
   CNFTRoyaltyTicket() = default;
@@ -614,8 +642,8 @@ public:
                                   std::string _pastelID, const SecureString& strKeyPass);
   static bool FindTicketInDb(const std::string& key, CNFTRoyaltyTicket& ticket);
 
-  static std::vector<CNFTRoyaltyTicket> FindAllTicketByPastelID(const std::string& pastelID);
-  static std::vector<CNFTRoyaltyTicket> FindAllTicketByNFTTnxId(const std::string& NFTTnxId);
+  static NFTRoyaltyTickets_t FindAllTicketByPastelID(const std::string& pastelID);
+  static NFTRoyaltyTickets_t FindAllTicketByNFTTnxId(const std::string& NFTTnxId);
 };
 
 // Take Down Ticket /////////////////////////////////////////////////////////////////////////////////////////////////////

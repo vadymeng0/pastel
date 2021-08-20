@@ -415,7 +415,7 @@ class MasterNodeTicketsTest(MasterNodeCommon):
         self.create_nft_ticket_and_signatures(self.creator_pastelid1, self.non_mn3,
                                               "HIJKLMNOP", "ABCDEFG", self.total_copies)
         NFT_ticket_txid = \
-            self.nodes[self.top_mns_index0].tickets("register", "NFT",
+            self.nodes[self.top_mns_index0].tickets("register", "nft",
                                                     self.ticket, json.dumps(self.signatures_dict),
                                                     self.top_mn_pastelid0, self.passphrase,
                                                     key1, key2, str(self.storage_fee))["txid"]

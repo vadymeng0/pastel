@@ -1424,7 +1424,7 @@ Available commands:
 
         if (params.size() == 1) {
             // If no additional parameter (fee) added, that means we use fee levels bound to PSL deflation
-            CAmount levelsBoundFee = masterNodeCtrl.GetNetworkFeePerMB() / masterNodeCtrl.GetChainDeflationRate();
+            CAmount levelsBoundFee = static_cast<CAmount>(masterNodeCtrl.GetNetworkFeePerMB() / masterNodeCtrl.GetChainDeflationRate());
 
             CMasternode masternode;
             if (masterNodeCtrl.masternodeManager.Get(masterNodeCtrl.activeMasternode.outpoint, masternode)) {
@@ -1607,7 +1607,7 @@ Available commands:
 	
 	std::string strCmd, strError;
 	if (TICKETS.IsCmd(RPC_CMD_TICKETS::Register)) {        
-        RPC_CMD_PARSER2(REGISTER, params, mnid, id, NFT, act, sell, buy, trade, down, royalty, username);
+        RPC_CMD_PARSER2(REGISTER, params, mnid, id, nft, act, sell, buy, trade, down, royalty, username);
         
         if (fHelp || !REGISTER.IsCmdSupported()) //-V560
 			throw JSONRPCError(RPC_INVALID_PARAMETER,
@@ -1628,7 +1628,7 @@ Available types:
                 PastelID
                 Timestamp
                 Signature (above fields signed by PastelID)
-  NFT     - Register new NFT ticket. If successful, returns "txid".
+  nft     - Register new NFT ticket. If successful, returns "txid".
             Ticket contains:
                 <...>
   act     - Send activation for new registered NFT ticket. If successful, returns "txid" of activation ticket.
@@ -1741,10 +1741,10 @@ As json rpc
 			
 			mnObj.pushKV(RPC_KEY_TXID, txid);
 		}
-        if (REGISTER.IsCmd(RPC_CMD_REGISTER::NFT)) {
+        if (REGISTER.IsCmd(RPC_CMD_REGISTER::nft)) {
 			if (fHelp || params.size() != 9) //-V560
 				throw JSONRPCError(RPC_INVALID_PARAMETER,
-                                   R"(tickets register NFT "ticket" "{signatures}" "pastelid" "passphrase" "key1" "key2" "fee"
+R"(tickets register nft "ticket" "{signatures}" "pastelid" "passphrase" "key1" "key2" "fee"
 Register new NFT ticket. If successful, method returns "txid".
 
 Arguments:
@@ -1763,10 +1763,10 @@ Arguments:
     {
         "creator": { "authorsPastelID": "authorsSignature" },
         "mn2":    { "mn2PastelID":     "mn2Signature"     },
-        "mn2":    { "mn3PastelID":     "mn3Signature"     }
+        "mn3":    { "mn3PastelID":     "mn3Signature"     }
     }
 3. "pastelid"   (string, required) The current, registering masternode (MN1) PastelID. NOTE: PastelID must be generated and stored inside node. See "pastelid newkey".
-4. "passpharse" (string, required) The passphrase to the private key associated with PastelID and stored inside node. See "pastelid newkey".
+4. "passphrase" (string, required) The passphrase to the private key associated with PastelID and stored inside node. See "pastelid newkey".
 5. "key1"       (string, required) The first key to search ticket.
 6. "key2"       (string, required) The second key to search ticket.
 7. "fee"        (int, required) The agreed upon storage fee.
@@ -1801,7 +1801,7 @@ Register NFT Ticket
     R"(""ticket-blob" "{signatures}" jXYqZNPj21RVnwxnEJ654wEdzi7GZTZ5LAdiotBmPrF7pDMkpX1JegDMQZX55WZLkvy9fxNpZcbBJuE8QYUqBF "passphrase", "key1", "key2", 100)") + R"(
 As json rpc
 )" + HelpExampleRpc("tickets",
-    R"("register", "NFT", "ticket" "{signatures}" "jXYqZNPj21RVnwxnEJ654wEdzi7GZTZ5LAdiotBmPrF7pDMkpX1JegDMQZX55WZLkvy9fxNpZcbBJuE8QYUqBF" "passphrase", "key1", "key2", 100)"));
+    R"("register", "nft", "ticket" "{signatures}" "jXYqZNPj21RVnwxnEJ654wEdzi7GZTZ5LAdiotBmPrF7pDMkpX1JegDMQZX55WZLkvy9fxNpZcbBJuE8QYUqBF" "passphrase", "key1", "key2", 100)"));
 
             if (!masterNodeCtrl.IsActiveMasterNode())
                 throw JSONRPCError(RPC_INTERNAL_ERROR,
@@ -1836,7 +1836,7 @@ As json rpc
         if (REGISTER.IsCmd(RPC_CMD_REGISTER::act)) {
 			if (fHelp || params.size() != 7) //-V560
 				throw JSONRPCError(RPC_INVALID_PARAMETER,
-                                   R"(tickets register act "reg-ticket-txid" "creator-height" "fee" "PastelID" "passphrase"
+R"(tickets register act "reg-ticket-txid" "creator-height" "fee" "PastelID" "passphrase"
 Register confirm new NFT ticket identity. If successful, method returns "txid".
 
 Arguments:
@@ -2154,7 +2154,7 @@ As json rpc
 	
 	if (TICKETS.IsCmd(RPC_CMD_TICKETS::find)) {
         
-        RPC_CMD_PARSER2(FIND, params, id, NFT, act, sell, buy, trade, down, royalty, username);
+        RPC_CMD_PARSER2(FIND, params, id, nft, act, sell, buy, trade, down, royalty, username);
             
         if (fHelp || !FIND.IsCmdSupported()) //-V560
 			throw JSONRPCError(RPC_INVALID_PARAMETER,
@@ -2165,7 +2165,7 @@ Available types:
   id      - Find PastelID (both personal and masternode) registration ticket.
             The "key" is PastelID or Collateral tnx outpoint for Masternode
             OR PastelID or Address for Personal PastelID
-  NFT     - Find new NFT registration ticket.
+  nft     - Find new NFT registration ticket.
             The "key" is 'Key1' or 'Key2' OR 'creator's PastelID'
   act     - Find NFT confirmation ticket.
             The "key" is 'NFTReg ticket txid' OR 'creator's PastelID' OR 'creator's Height (block height at what original NFT registration request was created)'
@@ -2206,7 +2206,7 @@ As json rpc
             }
         } break;
 
-        case RPC_CMD_FIND::NFT:
+        case RPC_CMD_FIND::nft:
             return getTickets<CNFTRegTicket>(key);
 
         case RPC_CMD_FIND::act:
@@ -2243,7 +2243,7 @@ As json rpc
     }
     if (TICKETS.IsCmd(RPC_CMD_TICKETS::list)) {
     
-        RPC_CMD_PARSER2(LIST, params, id, NFT, act, sell, buy, trade, down, royalty);
+        RPC_CMD_PARSER2(LIST, params, id, nft, act, sell, buy, trade, down, royalty);
         if (fHelp || (params.size() < 2 || params.size() > 4) || !LIST.IsCmdSupported()) //-V560
             throw JSONRPCError(RPC_INVALID_PARAMETER,
 R"(tickets list "type" ("filter") ("minheight")
@@ -2256,7 +2256,7 @@ Available types:
               mn       - lists only masternode PastelIDs.
               personal - lists only personal PastelIDs.
               mine     - lists only registered PastelIDs available on the local node.
-  NFT     - List ALL new NFT registration tickets. Without filter parameter lists ALL NFT tickets.
+  nft     - List ALL new NFT registration tickets. Without filter parameter lists ALL NFT tickets.
             Filter:
               all      - lists all NFT tickets (including non-confirmed). Default.
               active   - lists only activated NFT tickets - with Act ticket.
@@ -2328,7 +2328,7 @@ As json rpc
             }
             break;
 
-        case RPC_CMD_LIST::NFT:
+        case RPC_CMD_LIST::nft:
             if (filter == "all")
                 obj.read(masterNodeCtrl.masternodeTickets.ListTickets<CNFTRegTicket>());
             else if (filter == "active")
@@ -2537,19 +2537,19 @@ As json rpc
             case RPC_CMD_LIST::gettotalstoragefee: {
                 if (fHelp || params.size() != 10) //-V560
                     throw JSONRPCError(RPC_INVALID_PARAMETER,
-                                       R"(tickets tools gettotalstoragefee "ticket" "{signatures}" "pastelid" "passphrase" "key1" "key2" "fee" "imagesize"
+R"(tickets tools gettotalstoragefee "ticket" "{signatures}" "pastelid" "passphrase" "key1" "key2" "fee" "imagesize"
 Get full storage fee for the NFT registration. If successful, method returns total amount of fee.
 
 Arguments:
 1. "ticket"	(string, required) Base64 encoded ticket created by the creator.
 	{
 		"version": 1,
-		"author" "authorsPastelID",
-		"blocknum" <block-number-when-the-ticket-was-created-by-the-creator>,
-		"data_hash" "<base64'ed-hash-of-the-nft>",
-		"copies" <number-of-copies-of-nft-this-ticket-is-creating>,
-		"app_ticket" "<application-specific-data>",
-		"reserved" "<empty-string-for-now>",
+		"author": "authorsPastelID",
+		"blocknum": <block-number-when-the-ticket-was-created-by-the-creator>,
+		"data_hash": "<base64'ed-hash-of-the-nft>",
+		"copies": <number-of-copies-of-nft-this-ticket-is-creating>,
+		"app_ticket": "<application-specific-data>",
+		"reserved": "<empty-string-for-now>",
 	}
 2. "signatures"	(string, required) Signatures (base64) and PastelIDs of the author and verifying masternodes (MN2 and MN3) as JSON:
 	{
@@ -2596,8 +2596,9 @@ As json rpc
                 CDataStream data_stream(SER_NETWORK, DATASTREAM_VERSION);
                 data_stream << (uint8_t)NFTRegTicket.ID();
                 data_stream << NFTRegTicket;
-                std::vector<unsigned char> input_bytes{data_stream.begin(), data_stream.end()};
-                CAmount totalFee = imageSize*masterNodeCtrl.GetNetworkFeePerMB() + ceil(input_bytes.size()*masterNodeCtrl.GetNFTTicketFeePerKB()/1024);
+                v_uint8 input_bytes{data_stream.cbegin(), data_stream.cend()};
+                const CAmount totalFee = imageSize * masterNodeCtrl.GetNetworkFeePerMB() + 
+                    static_cast<CAmount>(ceil(input_bytes.size() * masterNodeCtrl.GetNFTTicketFeePerKB() / 1024));
 
                 UniValue mnObj(UniValue::VOBJ);
                 mnObj.pushKV("totalstoragefee", totalFee);
@@ -2665,12 +2666,17 @@ As json rpc
                         if(!CPastelID::isValidPassphrase(pastelid,strKeyPass))
                             throw JSONRPCError(RPC_WALLET_PASSPHRASE_INCORRECT, "Error: Failed to validate passphrase!");
 
-                        std::vector<std::string> result = masterNodeCtrl.masternodeTickets.ValidateOwnership(txid, pastelid);
-                        std::string nft_txid = std::move(result[0]);
-                        std::string trade_txid = std::move(result[1]);
-
-                        retVal.pushKV("nft", nft_txid);
-                        retVal.pushKV("trade", trade_txid);
+                        auto result = masterNodeCtrl.masternodeTickets.ValidateOwnership(txid, pastelid);
+                        if (result.has_value())
+                        {
+                            retVal.pushKV("nft", std::move(get<0>(result.value())));
+                            retVal.pushKV("trade", std::move(get<1>(result.value())));
+                        }
+                        else
+                        {
+                            retVal.pushKV("nft", "");
+                            retVal.pushKV("trade", "");
+                        }
                     }
                     return retVal;
                 }
@@ -2700,7 +2706,7 @@ As json rpc
     {
         const bool bSend = TICKETS.IsCmd(RPC_CMD_TICKETS::sendfaketicket);
 	    
-        RPC_CMD_PARSER2(FAKETICKET, params, mnid, id, NFT, act, sell);
+        RPC_CMD_PARSER2(FAKETICKET, params, mnid, id, nft, act, sell);
         if (FAKETICKET.IsCmd(RPC_CMD_FAKETICKET::mnid)) {
             std::string pastelID = params[2].get_str();
             SecureString strKeyPass;
@@ -2722,7 +2728,7 @@ As json rpc
             std::string strVerb = params[6].get_str();
             return CPastelTicketProcessor::CreateFakeTransaction(pastelIDRegTicket, ticketPrice, std::vector<std::pair<std::string, CAmount>>{}, strVerb, bSend);
         }
-        if (FAKETICKET.IsCmd(RPC_CMD_FAKETICKET::NFT)) {
+        if (FAKETICKET.IsCmd(RPC_CMD_FAKETICKET::nft)) {
             if (fImporting || fReindex)
                 throw JSONRPCError(RPC_INVALID_PARAMETER, "Initial blocks download. Re-try later");
         
@@ -2857,8 +2863,8 @@ UniValue ingest(const UniValue& params, bool fHelp)
         UniValue addressErrors(UniValue::VOBJ);
         UniValue tnxErrors(UniValue::VOBJ);
 
-        auto txCounter = 0;
-        auto lineCounter = 0;
+        size_t txCounter = 0;
+        size_t lineCounter = 0;
 
         std::ifstream infile(path);
         if (!infile)
