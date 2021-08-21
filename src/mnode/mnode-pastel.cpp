@@ -221,8 +221,8 @@ PastelIDRegTickets_t CPastelIDRegTicket::FindAllTicketByPastelAddress(const std:
   "blocknum": integer,              // block number when the ticket was created - this is to map the ticket to the MNs that should process it
   "block_hash": bytes               // hash of the top block when the ticket was created - this is to map the ticket to the MNs that should process it
   "copies": integer,                // number of copies
-  "royalty": short,                 // how much creator should get on all future resales (not yet supported by cNode)
-  "green_address": string,          // address for Green NFT payment (not yet supported by cNode)
+  "royalty": short,                 // how much creator should get on all future resales
+  "green": boolean,                 // whether Green NFT payment should be made
   "app_ticket": ...
 }
 */

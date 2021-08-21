@@ -152,26 +152,26 @@ class MasterNodeTicketsTest(MasterNodeCommon):
         self.pastelid_tests()
         self.mn_pastelid_ticket_tests(False)
         self.personal_pastelid_ticket_tests(False)
-        self.NFTreg_ticket_tests(False, "key1", "key2")
+        self.nftreg_ticket_tests(False, "key1", "key2")
 
         if self.royalty > 0:
             if self.royalty_tickets_tests > 0:
                 self.personal_nonmn5_royalty_initialize_tests()
-                self.NFTroyalty_ticket_tests(self.non_mn3, self.creator_pastelid1,
+                self.nftroyalty_ticket_tests(self.non_mn3, self.creator_pastelid1,
                                              self.nonmn5_royalty_pastelid1, self.nonmn5_royalty_address1, 1)
             if self.royalty_tickets_tests > 1:
                 self.personal_nonmn6_royalty_initialize_tests()
-                self.NFTroyalty_ticket_tests(self.non_mn5, self.nonmn5_royalty_pastelid1,
+                self.nftroyalty_ticket_tests(self.non_mn5, self.nonmn5_royalty_pastelid1,
                                              self.nonmn6_royalty_pastelid1, self.nonmn6_royalty_address1, 2)
         else:
             self.royalty_tickets_tests = 0
             self.royalty_null_tests = True
-            self.NFTroyalty_null_ticket_tests()
+            self.nftroyalty_null_ticket_tests()
 
-        self.NFTact_ticket_tests(False)
-        self.NFTsell_ticket_tests1(False)
-        self.NFTbuy_ticket_tests(False)
-        self.NFTtrade_ticket_tests(False)
+        self.nftact_ticket_tests(False)
+        self.nftsell_ticket_tests1(False)
+        self.nftbuy_ticket_tests(False)
+        self.nfttrade_ticket_tests(False)
         self.sell_buy_trade_tests()
         self.takedown_ticket_tests()
         self.storage_fee_tests()
@@ -196,11 +196,11 @@ class MasterNodeTicketsTest(MasterNodeCommon):
 
             self.pastelid_tests()
             self.personal_pastelid_ticket_tests(True)
-            self.NFTreg_ticket_tests(True, "key10001", "key20001")
-            self.NFTact_ticket_tests(True)
-            self.NFTsell_ticket_tests1(True)
-            self.NFTbuy_ticket_tests(True)
-            self.NFTtrade_ticket_tests(True)
+            self.nftreg_ticket_tests(True, "key10001", "key20001")
+            self.nftact_ticket_tests(True)
+            self.nftsell_ticket_tests1(True)
+            self.nftbuy_ticket_tests(True)
+            self.nfttrade_ticket_tests(True)
             self.sell_buy_trade_tests()
             self.takedown_ticket_tests()
             self.storage_fee_tests()
@@ -827,7 +827,7 @@ class MasterNodeTicketsTest(MasterNodeCommon):
             )
             print(f"not_top_mns_signatures_dict - {self.not_top_mns_signatures_dict!r}")
 
-    def NFTreg_ticket_tests(self, skip_mn_pastelid_registration, key1, key2):
+    def nftreg_ticket_tests(self, skip_mn_pastelid_registration, key1, key2):
         print("== NFT registration Tickets test ==")
         # c. NFT registration ticket
 
@@ -1187,7 +1187,7 @@ class MasterNodeTicketsTest(MasterNodeCommon):
         print("NFT registration tickets tested")
 
     # ===============================================================================================================
-    def NFTroyalty_null_ticket_tests(self):
+    def nftroyalty_null_ticket_tests(self):
         print("== NFT royalty null tickets test ==")
 
         assert_equal(self.royalty, 0)
@@ -1215,7 +1215,7 @@ class MasterNodeTicketsTest(MasterNodeCommon):
         print("NFT royalty null tickets tested")
 
     # ===============================================================================================================
-    def NFTroyalty_ticket_tests(self, nonmn_id, old_pastelid1, new_pastelid1, new_address1, num):
+    def nftroyalty_ticket_tests(self, nonmn_id, old_pastelid1, new_pastelid1, new_address1, num):
         print(f"== NFT royalty tickets test {num} ==")
 
         # fail if wrong PastelID
@@ -1371,7 +1371,7 @@ class MasterNodeTicketsTest(MasterNodeCommon):
         print(f"NFT royalty tickets {num} tested")
 
     # ===============================================================================================================
-    def NFTact_ticket_tests(self, skip_low_coins_tests):
+    def nftact_ticket_tests(self, skip_low_coins_tests):
         print("== NFT activation Tickets test ==")
         # d. NFT activation ticket
         #   d.a register NFT activation ticket (self.nft_ticket1_txid; self.storage_fee; self.creator_ticket_height)
@@ -1587,7 +1587,7 @@ class MasterNodeTicketsTest(MasterNodeCommon):
         print("NFT activation tickets tested")
 
     # ===============================================================================================================
-    def NFTsell_ticket_tests1(self, skip_some_tests):
+    def nftsell_ticket_tests1(self, skip_some_tests):
         print("== NFT sell Tickets test (selling original NFT ticket) ==")
         # tickets register sell nft_txid price PastelID passphrase valid_after valid_before
         #
@@ -1729,7 +1729,7 @@ class MasterNodeTicketsTest(MasterNodeCommon):
         print("NFT sell tickets tested (first run)")
 
     # ===============================================================================================================
-    def NFTbuy_ticket_tests(self, skip_low_coins_tests):
+    def nftbuy_ticket_tests(self, skip_low_coins_tests):
         print("== NFT buy Tickets test (buying original NFT ticket) ==")
 
         self.nonmn4_address1 = self.nodes[self.non_mn4].getnewaddress()
@@ -1819,7 +1819,7 @@ class MasterNodeTicketsTest(MasterNodeCommon):
         print("NFT buy tickets tested")
 
     # ===============================================================================================================
-    def NFTtrade_ticket_tests(self, skip_low_coins_tests):
+    def nfttrade_ticket_tests(self, skip_low_coins_tests):
         print("== NFT trade Tickets test (trading original NFT ticket) ==")
 
         # sends some coins back
